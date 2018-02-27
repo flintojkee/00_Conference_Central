@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"RnkXbyw9us4_w3H-FU6An0C4oYs/8l9_yxwuIJzhDAUPLhZGqUjMSVc\"",
+ "etag": "\"OQKfQPkpHu0nIKZBNBdt47Yvjvo/8l9_yxwuIJzhDAUPLhZGqUjMSVc\"",
  "discoveryVersion": "v1",
  "id": "conference:v1",
  "name": "conference",
