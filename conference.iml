@@ -26,6 +26,8 @@
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/appengine-endpoints" isTestSource="false" generated="true" />
       <excludeFolder url="file://$MODULE_DIR$/target/conference-1.0" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
+      <excludeFolder url="file://$MODULE_DIR$/target/surefire-reports" />
+      <excludeFolder url="file://$MODULE_DIR$/target/test-classes" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
