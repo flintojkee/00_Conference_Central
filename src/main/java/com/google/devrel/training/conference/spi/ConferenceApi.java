@@ -10,8 +10,14 @@ import com.google.api.server.spi.response.ConflictException;
 import com.google.api.server.spi.response.ForbiddenException;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.User;
 import com.google.devrel.training.conference.Constants;
+import com.google.devrel.training.conference.domain.Announcement;
 import com.google.devrel.training.conference.domain.Conference;
 import com.google.devrel.training.conference.domain.Profile;
 import com.google.devrel.training.conference.form.ConferenceForm;
@@ -181,7 +187,7 @@ public class ConferenceApi {
         // TODO (Lesson 4)
         // Allocate a key for the conference -- let App Engine allocate the ID
         // Don't forget to include the parent Profile in the allocated ID
-        final Key<Conference> conferenceKey = OfyService.factory().allocateId(profileKey, Conference.class);
+        final Key<Conference> conferenceKey = ofy().factory().allocateId(profileKey, Conference.class);
 
         // TODO (Lesson 4)
         // Get the Conference Id from the Key
@@ -195,12 +201,16 @@ public class ConferenceApi {
         // TODO (Lesson 4)
         // Create a new Conference Entity, specifying the user's Profile entity
         // as the parent of the conference
-        Conference conference = new Conference(conferenceId, userId, conferenceForm);
+        Conference conference = new Conference(conferenceId, user.getUserId(), conferenceForm);
 
         // TODO (Lesson 4)
         // Save Conference and Profile Entities
         ofy().save().entities(profile, conference).now();
 
+        String conInf = conference.toString();
+        Queue queue = QueueFactory.getQueue("email-queue");
+        queue.add(TaskOptions.Builder.withUrl("/send-email").param("email", user.getEmail())
+                .param("conferenceInfo", conInf));
         return conference;
     }
     @ApiMethod(
@@ -514,6 +524,18 @@ public class ConferenceApi {
         }
         return result;
     }
-
+    @ApiMethod(
+            name="getAnnouncement",
+            path="announcement",
+            httpMethod=HttpMethod.GET)
+    public Announcement getAnnouncement(){
+            	//TO DO GET announcement from memcache by key and if it exist return it
+   	MemcacheService memcaheservice = MemcacheServiceFactory.getMemcacheService();
+    String key = Constants.MEMCACHE_ANNOUNCEMENTS_KEY;
+    Announcement anno = (Announcement) memcaheservice.get(key);
+    if(anno != null)
+        return anno;
+    return null;
+    }
 
 }
